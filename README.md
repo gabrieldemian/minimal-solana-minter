@@ -1,4 +1,4 @@
-### Minimalistic solana minter program
+## Minimalistic solana minter program
 
 The objective of this repository is to be only a minimalistic template for NFTs projects on Solana, so you can build your own program with your own features using this as a model. Also, it is ideal for someone who wants to study Solana. And it uses Serum Anchor framework to make abstractions and to handle automatic serialization and deserialization.
 
