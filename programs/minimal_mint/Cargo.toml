@@ -1,0 +1,19 @@
+[package]
+name = "minimal_mint"
+version = "0.0.1"
+description = "Minimalistic solana minter program"
+authors = ["Gabriel Costa <gabrielgcr45@gmail.com>"]
+edition = "2018"
+license = "Apache-2.0"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "minimal_mint"
+
+[features]
+no-entrypoint = []
+
+[dependencies]
+spl-token = { version = "3.1.1", features = [ "no-entrypoint" ] }
+metaplex-token-metadata = { version = "0.0.1", features = [ "no-entrypoint" ] }
+anchor-lang = "0.20.1"

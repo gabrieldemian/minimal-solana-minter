@@ -1,0 +1,15 @@
+[programs.localnet]
+minimal_mint = "4DJz2TvohxXxovGgwjWZcfXoZaoHJR4cHvGTF15Bot42"
+
+[programs.devnet]
+minimal_mint = "4DJz2TvohxXxovGgwjWZcfXoZaoHJR4cHvGTF15Bot42"
+
+[registry]
+url = "https://anchor.projectserum.com"
+
+[provider]
+cluster = "devnet"
+wallet = "~/.config/solana/devnet.json"
+
+[scripts]
+test = "npx ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
