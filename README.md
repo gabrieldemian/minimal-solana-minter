@@ -35,7 +35,7 @@ The "candy_machine" is just a configuration account with variables that will be 
 ## Useful links for studying
 The following links helped me to understand the theory of Solana blockchain. I recommend them all.
 
-[Building a Solana decentralised twitter](https://lorisleiva.com/create-a-solana-dapp-from-scratch/what-are-we-building)
+[Building a Solana decentralised twitter](https://lorisleiva.com/create-a-solana-dapp-from-scratch/what-are-we-building) <br />
 [Solana Cookbook](https://solanacookbook.com/core-concepts/accounts.html#facts) <br />
 [Understanding Program Derived Addresses](https://www.brianfriel.xyz/understanding-program-derived-addresses/) <br />
 [SPL Associate Token Account & Merge](https://solongwallet.medium.com/spl-associate-token-account-merge-b134b8e01dc0) <br />
