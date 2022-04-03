@@ -26,7 +26,6 @@ Metaplex uses 2 accounts for configuration, "config" and "candy_machine". I'm us
 The "candy_machine" is just a configuration account with variables that will be common to every mint.
 
 ## How to use
-- Copy your devnet keypair into the root folder, and name it `devnet.json` (dont worry, this file is listed on .gitignore)
 - Change the cluster and your wallet location in `Anchor.toml`
 - Go to `tests/minimal_mint.ts` and make sure the file will run the `initializeCandyMachine()` function
 - Run `yarn` `anchor build` `anchor deploy` and `anchor test`

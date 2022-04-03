@@ -8,16 +8,16 @@ pub mod error;
 pub mod state;
 pub mod utils;
 
-declare_id!("4DJz2TvohxXxovGgwjWZcfXoZaoHJR4cHvGTF15Bot42");
+declare_id!("BhuuED6jc394a3TpPiqzzy996RPWkVgVMtonNFHe5H3t");
 
 #[program]
 pub mod minimal_mint {
 
     use super::*;
-    use anchor_lang::solana_program::{program::{invoke_signed, invoke}, system_instruction};
     use metaplex_token_metadata::{instruction::{create_metadata_accounts, update_metadata_accounts}, state::Creator};
+    use anchor_lang::solana_program::{program::{invoke_signed, invoke}, system_instruction};
 
-    pub fn mint_nft(ctx: Context<MintNFT>, nft_name: String, nft_uri: String) -> ProgramResult {
+    pub fn mint_nft(ctx: Context<MintNFT>, nft_name: String, nft_uri: String) -> Result<()> {
 
         let candy_machine = &mut ctx.accounts.candy_machine;
         let now = Clock::get()?.unix_timestamp;
@@ -41,29 +41,24 @@ pub mod minimal_mint {
             }
         }
 
-        /* pay fees - transfer money from the buyer to the treasury account */
+        /* pay fees - transfer SOL from the buyer to the authority account */
         invoke(
             &system_instruction::transfer(
                 &ctx.accounts.mint_authority.key,
-                ctx.accounts.wallet.key,
+                ctx.accounts.authority.key,
                 candy_machine.data.price,
             ),
             &[
-                ctx.accounts.mint_authority.clone(),
-                ctx.accounts.wallet.clone(),
-                ctx.accounts.system_program.clone(),
+                ctx.accounts.mint_authority.to_account_info().clone(),
+                ctx.accounts.authority.clone(),
+                ctx.accounts.system_program.to_account_info().clone(),
             ],
         )?;
 
         /* increment the counter of total mints by 1 */
         candy_machine.data.nfts_minted += 1;
 
-        /* if you are confused about PDAs and why it is needed */
-        /* please read this article: https://paulx.dev/blog/2021/01/14/programming-on-solana-an-introduction/#program-derived-addresses-pdas-part-1 */
-        let (_pda_pubkey, bump) =
-            Pubkey::find_program_address(&[state::PREFIX.as_bytes(), state::SUFIX.as_bytes()], &self::id());
-
-        let authority_seeds = [state::PREFIX.as_bytes(), state::SUFIX.as_bytes(), &[bump]];
+        let authority_seeds = [state::PREFIX.as_bytes(), &[candy_machine.bump]];
 
         let mut creators: Vec<Creator> = vec![Creator {
             address: candy_machine.key(),
@@ -83,11 +78,11 @@ pub mod minimal_mint {
         let metadata_infos = vec![
             ctx.accounts.metadata.clone(),
             ctx.accounts.mint.clone(),
-            ctx.accounts.mint_authority.clone(),
-            ctx.accounts.mint_authority.clone(),
+            ctx.accounts.mint_authority.to_account_info().clone(),
+            ctx.accounts.mint_authority.to_account_info().clone(),
             ctx.accounts.token_metadata_program.clone(),
-            ctx.accounts.token_program.clone(),
-            ctx.accounts.system_program.clone(),
+            ctx.accounts.token_program.to_account_info().clone(),
+            ctx.accounts.system_program.to_account_info().clone(),
             ctx.accounts.rent.to_account_info().clone(),
             candy_machine.to_account_info().clone(),
         ];
@@ -114,7 +109,7 @@ pub mod minimal_mint {
         )?;
 
         /* at this point the NFT is already minted with the metadata */
-        /* this invoke will disable more mints to the account */
+        /* this invoke call will disable more mints to the account */
         invoke(
             &spl_token::instruction::set_authority(
                 &ctx.accounts.token_program.key(),
@@ -125,9 +120,9 @@ pub mod minimal_mint {
                 &[&ctx.accounts.mint_authority.key()],
             )?,
             &[
-                ctx.accounts.mint_authority.clone(),
+                ctx.accounts.mint_authority.to_account_info().clone(),
                 ctx.accounts.mint.clone(),
-                ctx.accounts.token_program.clone(),
+                ctx.accounts.token_program.to_account_info().clone(),
             ],
         )?;
 
@@ -155,17 +150,16 @@ pub mod minimal_mint {
 
     pub fn initialize_candy_machine(
         ctx: Context<InitializeCandyMachine>,
-        _bump: u8,
         data: CandyMachineData,
-    ) -> ProgramResult {
-        
+    ) -> Result<()> {
+
         let candy_machine = &mut ctx.accounts.candy_machine;
 
         msg!("pubkey {}", candy_machine.key());
 
         candy_machine.data = data;
-        candy_machine.wallet = *ctx.accounts.wallet.key;
         candy_machine.authority = *ctx.accounts.authority.key;
+        candy_machine.bump = *ctx.bumps.get("candy_machine").unwrap();
 
         Ok(())
     }
@@ -174,7 +168,7 @@ pub mod minimal_mint {
         ctx: Context<UpdateCandyMachine>,
         price: Option<u64>,
         go_live_date: Option<i64>,
-    ) -> ProgramResult {
+    ) -> Result<()> {
 
         let candy_machine = &mut ctx.accounts.candy_machine;
 

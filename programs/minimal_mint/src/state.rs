@@ -12,7 +12,7 @@ pub struct Creator {
 #[derive(Default)]
 pub struct CandyMachine {
     pub authority: Pubkey,
-    pub wallet: Pubkey,
+    pub bump: u8,
     pub data: CandyMachineData,
 }
 
@@ -29,5 +29,4 @@ pub struct CandyMachineData {
 
 /* seeds of the PDA, can be anything you want */
 /* remember to change them on the JS too (utils.ts file) */
-pub static PREFIX: &str = "yglHzkU";
-pub static SUFIX: &str = "FKs9tP0";
+pub static PREFIX: &str = "minimal";
