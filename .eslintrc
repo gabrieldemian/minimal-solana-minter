@@ -1,0 +1,38 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "extends": [
+    "airbnb-base",
+    "plugin:prettier/recommended",
+    "plugin:import/typescript"
+  ],
+  "rules": {
+    "consistent-return": "off",
+    "no-restricted-syntax": "off",
+    "no-console": "off",
+    "no-undef": "off", // disable undefined vars for the tests
+    "import/extensions": "off",
+    "max-len": [
+      "error",
+      {
+        "code": 75,
+        "ignoreComments": true,
+        "ignoreUrls": true,
+        "tabWidth": 2
+      }
+    ],
+    "prettier/prettier": [
+      "error",
+      {
+        "singleQuote": true,
+        "endOfLine": "auto",
+        "trailingComma": "none",
+        "tabWidth": 2,
+        "bracketSpacing": true,
+        "semi": false,
+        "printWidth": 75
+      }
+    ]
+  }
+}

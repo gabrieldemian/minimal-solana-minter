@@ -1,25 +1,18 @@
+import { BN } from '@project-serum/anchor'
 
-import { Program, BN, Idl } from '@project-serum/anchor'
-import idl from '../target/idl/minimal_mint.json'
-import { DEVNET_WALLET, parsePrice } from '../utils'
-import { candyMachine, programId } from '../constants'
-import { MinimalMint } from '../target/types/minimal_mint'
+import { candyMachine } from '../constants'
+import { DEVNET_WALLET, parsePrice, program } from '../utils'
 
-const main = async () => {
+const updateCandyMachine = async () => {
+  const accounts = {
+    candyMachine,
+    authority: DEVNET_WALLET.publicKey
+  }
 
-  const program = new Program(idl as Idl, programId) as Program<MinimalMint>
-
-  await program.rpc.updateCandyMachine(
-    new BN(parsePrice(0.7)),
-    new BN(1640889000),
-    {
-      accounts: {
-        candyMachine,
-        authority: DEVNET_WALLET.publicKey,
-      },
-    }
-  )
-
+  await program.methods
+    .updateCandyMachine(new BN(parsePrice(0.7)), new BN(1640889000))
+    .accounts(accounts)
+    .rpc()
 }
 
-export default main
+export default updateCandyMachine

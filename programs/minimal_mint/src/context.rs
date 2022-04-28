@@ -42,18 +42,17 @@ pub struct InitializeCandyMachine<'info> {
     #[account(
         init,
         seeds=[PREFIX.as_bytes()],
-        /* anchor automatically pays the rent if I use 'payer' and 'space' in this macro */
         payer = authority,
         space =
             8  +  // discriminator
                   // \/ candy_machine
-            8  + 8 + 8 + (38 * 1 /* multiply by n of creators */) + 4 + 2 + 8 +
+            8  + 8 + 8 + (40 * 1 /* multiply by n of creators */) + 8 + 2 + 9 +
             32 +  // authority
             32 +  // start date
-            1,    // bump
+            1,   // bump + bonus
         bump,
+        constraint = candy_machine.to_account_info().owner == program_id
     )]
-    #[account(constraint = candy_machine.to_account_info().owner == program_id)]
     pub candy_machine: Account<'info, CandyMachine>,
 
     /* the authority will also receive SOL from sales fees */

@@ -1,39 +1,42 @@
+import { BN } from '@project-serum/anchor'
+import { PublicKey, SystemProgram } from '@solana/web3.js'
 
-import { Program, workspace, BN } from '@project-serum/anchor'
-import { SystemProgram, PublicKey } from '@solana/web3.js'
-import idl from '../target/idl/minimal_mint.json'
-import { DEVNET_WALLET, parsePrice } from '../utils'
 import { PREFIX } from '../constants'
-import { MinimalMint } from '../target/types/minimal_mint'
+import idl from '../target/idl/minimal_mint.json'
+import { DEVNET_WALLET, parsePrice, program, provider } from '../utils'
 
-const main = async () => {
-
-  const program = workspace.MinimalMint as Program<MinimalMint>
-
+const initializeCandyMachine = async () => {
   /* generating a PDA */
   const [candyMachine] = await PublicKey.findProgramAddress(
     [Buffer.from(PREFIX)],
     new PublicKey(idl.metadata.address)
   )
 
-  await program.rpc.initializeCandyMachine(
-    {
-      price: new BN(parsePrice(0.5)),
-      nftsMinted: new BN(0),
-      goLiveDate: new BN(1640889000),
-      creators: [{ address: DEVNET_WALLET.publicKey, verified: true, share: 100 }],
-      symbol: 'SMM',
-      sellerFeeBasisPoints: 500, // 500 = 5%
-      maxSupply: new BN(48),
-    },
-    {
-      accounts: {
-        candyMachine,
-        authority: DEVNET_WALLET.publicKey,
-        systemProgram: SystemProgram.programId,
-      },
-    }
-  )
+  const params = {
+    price: new BN(parsePrice(0.2)),
+    nftsMinted: new BN(0),
+    goLiveDate: new BN(1640889000),
+    creators: [
+      { address: DEVNET_WALLET.publicKey, verified: true, share: 100 }
+    ],
+    symbol: 'SMM',
+    sellerFeeBasisPoints: 500, // 500 = 5%
+    maxSupply: new BN(48)
+  }
+
+  console.log('\n take this address and replace on /constants.ts')
+  console.log('\n candyMachine address: ', candyMachine.toBase58())
+
+  const accounts = {
+    candyMachine,
+    authority: provider.wallet.publicKey,
+    systemProgram: SystemProgram.programId
+  }
+
+  await program.methods
+    .initializeCandyMachine(params)
+    .accounts(accounts)
+    .rpc()
 }
 
-export default main
+export default initializeCandyMachine
